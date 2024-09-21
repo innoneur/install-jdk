@@ -39,6 +39,10 @@ def _safe_extract(
     numeric_owner: bool = False,
 ):
     if isinstance(tar, ZipFile):
+        for member in tar.infolist():
+            member_path = ospath.join(path, member.filename)
+            if not _is_within_directory(path, member_path):
+                raise ExtractorError("Attempted Path Traversal in Archive File")
         tar.extractall(path)
     else:
         for member in tar.getmembers():
