@@ -43,9 +43,10 @@ def _safe_extract(
     else:
         for member in tar.getmembers():
             member_path = ospath.join(path, member.name)
-            if not _is_within_directory(path, member_path):
+            member_path = ospath.normpath(member_path)
+            if not _is_within_directory(path, member_path) or ".." in member_path.split(ospath.sep):
                 raise ExtractorError("Attempted Path Traversal in Archive File")
-        tar.extractall(path, members, numeric_owner=numeric_owner)
+            tar.extract(member, path, numeric_owner=numeric_owner)
 
 
 def get_compressed_file_ext(file: str) -> str:
